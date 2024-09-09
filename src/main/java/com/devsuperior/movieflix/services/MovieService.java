@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.devsuperior.movieflix.dto.MovieCardDTO;
 import com.devsuperior.movieflix.dto.MovieDetailsDTO;
+import com.devsuperior.movieflix.entities.Genre;
 import com.devsuperior.movieflix.entities.Movie;
 import com.devsuperior.movieflix.repositories.GenreRepository;
 import com.devsuperior.movieflix.repositories.MovieRepository;
@@ -33,8 +34,19 @@ public class MovieService {
 	}
 	
 	@Transactional(readOnly = true)
-	public Page<MovieCardDTO> findByGenre(Long genreId, Pageable pageable) {		
-		Page<Movie> page = repository.searchByGenre(genreRepository.getReferenceById(genreId), pageable);
+	public Page<MovieCardDTO> findByGenre(Long genreId, Pageable pageable) {
+		Genre genre = (genreId == 0) ? null : genreRepository.getReferenceById(genreId);
+		//melhor fazer acima do que if else abaixo
+		/*
+		Genre genre = new Genre();
+		if (genreId == 0){
+		   genre = null;	
+		}
+		else {
+			genre = genreRepository.getReferenceById(genreId);
+		}
+		*/
+		Page<Movie> page = repository.searchByGenre(genre, pageable);
 		return page.map(x -> new MovieCardDTO(x));
 	}
 
